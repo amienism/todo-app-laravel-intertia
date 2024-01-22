@@ -47,6 +47,7 @@ const handleDelete = (id) => {
         <title>Todos</title>
     </Head>
     <AppLayout>
+        
         <!-- Modal -->
         <div class="modal modal-blur fade" id="delete-modal" tabindex="-1" role="dialog" aria-modal="true" >
             <div class="modal-dialog modal-sm modal-dialog-centered" role="document">

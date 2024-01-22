@@ -11,18 +11,17 @@
                 </h1>
 
                 <div class="navbar-nav flex-row order-md-last">
-                    <div class="nav-item">
-                        <a href="#" class="nav-link d-flex lh-1 text-reset p-0">
-                            <span
-                                class="avatar avatar-sm"
-                            ></span>
-                            <div class="d-none d-xl-block ps-2">
-                                <div>Paweł Kuna</div>
-                                <div class="mt-1 small text-secondary">
-                                    UI Designer
-                                </div>
-                            </div>
-                        </a>
+                    <div class="nav-item dropdown">
+                    <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu" aria-expanded="false">
+                        <span class="avatar avatar-sm" style="background-image: url(./static/avatars/000m.jpg)"></span>
+                        <div class="d-none d-xl-block ps-2">
+                        <div>{{ $page.props.auth.user.name }}</div>
+                        <div class="mt-1 small text-secondary">UI Designer</div>
+                        </div>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                        <Link href="/auth/logout" method="post" class="dropdown-item">Logout</Link>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -40,4 +39,5 @@
 
 <script setup>
 import { Head } from '@inertiajs/vue3'
+import {Link} from '@inertiajs/vue3';
 </script>

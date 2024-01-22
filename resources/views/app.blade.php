@@ -8,6 +8,7 @@
 
         
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
 
         <!-- Scripts -->
         @routes
@@ -17,6 +18,6 @@
     <body class="font-sans antialiased">
         @inertia
 
-        <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
+        
     </body>
 </html>

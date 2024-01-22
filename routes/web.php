@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TodosController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -16,11 +17,14 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', [TodosController::class, 'index'])->name('todos');
+Route::prefix('/auth')->group(function () {
+    Route::get('/login', [AuthController::class, 'index'])->middleware('guest')->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
 
-/*
-Grouping todos action/api
-*/
+Route::get('/', [TodosController::class, 'index'])->middleware('auth')->name('todos');
+
 Route::prefix('/todos')->group(function () {
     Route::post('/', [TodosController::class, 'store']);
     Route::put('/{id}', [TodosController::class, 'update']);
