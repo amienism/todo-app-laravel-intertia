@@ -12,9 +12,13 @@ class TodosController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $todos = Todos::all();
+        $todos = Todos::when($request->query('search_term'), function ($query) use ($request) {
+            return $query->where('todo_name', 'LIKE', '%'.$request->query('search_term').'%');
+        });
+
+        $todos = $todos->paginate(10);
 
         return Inertia::render(
             'Index', ['todos' => $todos]
@@ -71,7 +75,7 @@ class TodosController extends Controller
             'is_completed' => $request->is_completed,
         ]);
 
-        return redirect('/')->with('message', 'Todo Created Successfully');
+        return;
     }
 
     /**
@@ -81,6 +85,7 @@ class TodosController extends Controller
     {
         Todos::where('id', $id)->delete();
 
-        return redirect('/')->with('message', 'Todo Deleted Successfully');
+        // return redirect('/')->with('message', 'Todo Deleted Successfully');
+        return;
     }
 }

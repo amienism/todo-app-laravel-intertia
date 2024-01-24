@@ -1,14 +1,37 @@
 <script setup>
 
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { useForm } from '@inertiajs/vue3'
+import { router, useForm, usePage } from '@inertiajs/vue3'
 import { Head } from '@inertiajs/vue3'
+import { onMounted } from "vue";
+import { ref } from "vue";
+
+const debounce = (func, timeout = 1000) => {
+    let timeoutId;
+    return function() {
+        const context = this;
+        const args = arguments;
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            func.apply(context, args);
+        }, timeout);
+    };
+}
 
 const props = defineProps({
     todos: {
-        type: Array,
-        default: () => ([]),
+        type: Object,
+        default: () => ({}),
     },
+});
+
+const searchTerm = ref(usePage().props.query.search_term || '');
+
+const pagination = ref({
+    current_page: props.todos.current_page || 1,
+    per_page: props.todos.per_page,
+    total_page: props.todos.last_page,
+    total_data: props.todos.total
 });
 
 const formData = useForm({
@@ -37,7 +60,21 @@ const handleModal = (id) => {
 }
 
 const handleDelete = (id) => {
-    formData.delete('/todos/' + id)
+    // formData.delete('/todos/' + id)
+
+    router.delete('/todos/' + id, { preserveState: true });
+}
+
+const handleSearch = debounce(() => {
+    pagination.value.current_page = 1;
+
+    router.get('/', { search_term: searchTerm.value, page: pagination.value.current_page }, { preserveState: true })
+});
+
+const handlePaginate = (page) => {
+    pagination.value.current_page = Number(page);
+
+    router.get('/', { search_term: searchTerm.value, page: pagination.value.current_page }, { preserveState: true })
 }
 
 </script>
@@ -47,7 +84,6 @@ const handleDelete = (id) => {
         <title>Todos</title>
     </Head>
     <AppLayout>
-        
         <!-- Modal -->
         <div class="modal modal-blur fade" id="delete-modal" tabindex="-1" role="dialog" aria-modal="true" >
             <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
@@ -92,7 +128,7 @@ const handleDelete = (id) => {
         </form>
         <div class="card">
             <div class="input-icon p-2">
-                <input type="text" value="" class="form-control" placeholder="Search…">
+                <input type="text" v-model="searchTerm" class="form-control" placeholder="Search…" @input="handleSearch()">
                 <span class="input-icon-addon">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path><path d="M21 21l-6 -6"></path></svg>
                 </span>
@@ -108,7 +144,7 @@ const handleDelete = (id) => {
                         </tr>
                     </thead>
                     <tbody>
-                    <template v-for="(todo, idx) in todos">
+                    <template v-for="(todo, idx) in todos.data">
                         <tr>
                             <td>{{ idx + 1 }}</td>
                             <td>{{ todo.todo_name }}</td>
@@ -122,10 +158,10 @@ const handleDelete = (id) => {
                             </td>
                             <td>
                                 <div class="btn-list flex-nowrap">
-                                    <button type="button" class="btn btn-icon btn-sm btn-green" @click="handleComplete(todo.id)">
+                                    <button type="button" class="btn btn-icon btn-sm btn-green" @click="handleComplete(todo.id)" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mark as completed">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-check" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
                                     </button>
-                                    <button type="button" class="btn btn-icon btn-sm btn-red" data-bs-target="#delete-modal" data-bs-toggle="modal" @click="handleModal(todo.id)">
+                                    <button type="button" class="btn btn-icon btn-sm btn-red" data-bs-target="#delete-modal" data-bs-toggle="modal" @click="handleModal(todo.id)" data-bs-placement="bottom" title="Tooltip on bottom">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                     </button>
                                 </div>
@@ -134,6 +170,14 @@ const handleDelete = (id) => {
                     </template>
                     </tbody>
                 </table>
+            </div>
+            <div class="card-footer d-flex align-items-center">
+                <p class="m-0 text-secondary">Showing <span>{{ todos.from || 0 }}</span> to <span>{{ todos.to || 0 }}</span> of <span>{{ todos.total || 0 }}</span> entries per page</p>
+                <ul class="pagination m-0 ms-auto">
+                    <template v-for="link in todos.links.slice(1, -1)">
+                        <li :class="link.active ? 'page-item active' : 'page-item'"><a class="page-link cursor-pointer" @click="handlePaginate(link.label)">{{ link.label }}</a></li>
+                    </template>
+                </ul>
             </div>
         </div>
     </AppLayout>

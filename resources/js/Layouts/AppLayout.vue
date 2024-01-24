@@ -5,7 +5,7 @@
                 <h1
                     class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3"
                 >
-                    <a href="#">
+                    <a href="/demos">
                         <h1>Todo App</h1>
                     </a>
                 </h1>
@@ -20,7 +20,7 @@
                         </div>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <Link href="/auth/logout" method="post" class="dropdown-item">Logout</Link>
+                        <Link href="/auth/logout" method="post" class="dropdown-item" as="button">Logout</Link>
                     </div>
                     </div>
                 </div>

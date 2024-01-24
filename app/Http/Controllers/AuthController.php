@@ -24,9 +24,13 @@ class AuthController extends Controller
 
         $authenticate = Auth::attempt(['email' => $request->email, 'password' => $request->password]);
 
+        if(!$authenticate){
+            return redirect('/auth/login')->with("message", ['text' => 'Email or password is wrong', 'type' => "error"]);
+        }
+
         $user = Auth::user();
 
-        return redirect('/')->with('message', 'Login Success');
+        return redirect('/')->with("message", ['text' => 'Login success', 'type' => "success"]);
     }
 
     public function logout (Request $request) {

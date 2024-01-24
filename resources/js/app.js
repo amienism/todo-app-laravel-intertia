@@ -15,6 +15,11 @@ createInertiaApp({
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
+            .mixin({
+                methods: {
+                    
+                }
+              })
             .mount(el);
     },
     progress: {
