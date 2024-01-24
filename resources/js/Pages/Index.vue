@@ -39,6 +39,10 @@ const formData = useForm({
     is_completed: null
 });
 
+const handleGet = () => {
+    router.get('/', { search_term: searchTerm.value, page: pagination.value.current_page }, { preserveState: true });
+}
+
 const handleStore = () => {
     formData.post('/todos', {
         onSuccess: () => formData.reset()
@@ -68,13 +72,13 @@ const handleDelete = (id) => {
 const handleSearch = debounce(() => {
     pagination.value.current_page = 1;
 
-    router.get('/', { search_term: searchTerm.value, page: pagination.value.current_page }, { preserveState: true })
+    handleGet();
 });
 
 const handlePaginate = (page) => {
     pagination.value.current_page = Number(page);
 
-    router.get('/', { search_term: searchTerm.value, page: pagination.value.current_page }, { preserveState: true })
+    handleGet();
 }
 
 </script>
@@ -127,12 +131,22 @@ const handlePaginate = (page) => {
             </div>
         </form>
         <div class="card">
-            <div class="input-icon m-2">
+            <!-- <div class="input-icon m-2">
                 <input type="text" v-model="searchTerm" class="form-control" placeholder="Search…" @input="handleSearch()">
                 <span class="input-icon-addon">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path><path d="M21 21l-6 -6"></path></svg>
                 </span>
-            </div>
+            </div> -->
+            <div class="card-body border-bottom py-3">
+                    <div class="d-flex">
+                      <div class="ms-auto text-secondary">
+                        Search:
+                        <div class="ms-2 d-inline-block">
+                            <input type="text" v-model="searchTerm" class="form-control form-control-sm" @input="handleSearch()">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
             <div class="table-responsive">
                 <table class="table table-vcenter card-table">
                     <thead>
